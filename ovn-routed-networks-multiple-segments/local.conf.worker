@@ -1,0 +1,90 @@
+[[local|localrc]]
+disable_all_services
+enable_service br-ex-tcpdump
+enable_service br-int-flows
+disable_service c-bak
+disable_service c-vol
+enable_service dstat
+enable_service file_tracker
+disable_service horizon
+enable_service memory_tracker
+enable_service n-cpu
+enable_service openstack-cli-server
+enable_service ovn-controller
+disable_service ovn-northd
+enable_service ovs-vswitchd
+enable_service ovsdb-server
+enable_service placement-client
+disable_service q-agt
+disable_service q-dhcp
+enable_service q-fake
+disable_service q-l3
+disable_service q-meta
+disable_service q-metering
+enable_service q-ovn-agent
+disable_service q-ovn-metadata-agent
+disable_service q-svc
+disable_service tempest
+enable_service tls-proxy
+ADMIN_PASSWORD="secretadmin"
+DATABASE_HOST="10.209.0.252"
+DATABASE_PASSWORD="secretdatabase"
+DATABASE_TYPE="mysql"
+ENABLE_CHASSIS_AS_GW="False"
+ENABLE_SYSCTL_MEM_TUNING="True"
+ENABLE_SYSCTL_NET_TUNING="True"
+ENABLE_TLS="True"
+ENABLE_ZSWAP="True"
+ERROR_ON_CLONE="True"
+FIXED_RANGE="10.1.0.0/20"
+FLOATING_RANGE="172.24.5.0/24"
+GLANCE_HOSTPORT="10.209.0.252:9292"
+HOST_IP="10.209.0.215"
+IPV4_ADDRS_SAFE_TO_USE="10.1.0.0/20"
+LIBVIRT_TYPE="qemu"
+LOGFILE="/opt/stack/logs/devstacklog.txt"
+LOG_COLOR="False"
+NETWORK_GATEWAY="10.1.0.1"
+NOVA_LIBVIRT_TB_CACHE_SIZE="128"
+NOVA_VNC_ENABLED="True"
+OVN_AGENT_EXTENSIONS="metadata"
+OVN_BRANCH="main"
+OVN_BUILD_FROM_SOURCE="True"
+OVN_DBS_LOG_LEVEL="dbg"
+OVS_BRANCH="main"
+PHYSICAL_NETWORK="public"
+PUBLIC_BRIDGE_MTU="1430"
+PUBLIC_NETWORK_GATEWAY="172.24.5.1"
+Q_AGENT="ovn"
+Q_HOST="10.209.0.252"
+Q_ML2_PLUGIN_MECHANISM_DRIVERS="ovn,logger"
+Q_ML2_TENANT_NETWORK_TYPE="geneve"
+Q_USE_PROVIDERNET_FOR_PUBLIC="True"
+RABBIT_HOST="10.209.0.252"
+RABBIT_PASSWORD="secretrabbit"
+SERVICE_HOST="10.209.0.252"
+SERVICE_PASSWORD="secretservice"
+VERBOSE="True"
+VERBOSE_NO_TIMESTAMP="True"
+LIBS_FROM_GIT=novnc,cinder,devstack,glance,keystone,neutron,neutron-tempest-plugin,nova,os-test-images,placement,requirements,swift,tempest
+enable_plugin neutron https://opendev.org/openstack/neutron
+enable_plugin neutron-tempest-plugin https://opendev.org/openstack/neutron-tempest-plugin
+
+[[post-config|$NEUTRON_CONF]]
+[DEFAULT]
+global_physnet_mtu = 1430
+[[post-config|/$NEUTRON_CORE_PLUGIN_CONF]]
+[ovn]
+enable_distributed_floating_ip = True
+[[test-config|$TEMPEST_CONFIG]]
+[compute]
+min_compute_nodes = 2
+
+[neutron_plugin_options]
+is_igmp_snooping_enabled = True
+
+[scenario]
+dhcp_client = dhcpcd
+
+[service-clients]
+http_timeout = 90
