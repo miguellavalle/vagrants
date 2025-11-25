@@ -1,0 +1,125 @@
+[[local|localrc]]
+disable_all_services
+enable_service br-ex-tcpdump
+enable_service br-int-flows
+disable_service c-api
+disable_service c-bak
+disable_service c-sch
+disable_service c-vol
+disable_service cinder
+enable_service dstat
+disable_service etcd
+enable_service etcd3
+enable_service file_tracker
+enable_service g-api
+disable_service horizon
+enable_service key
+enable_service memory_tracker
+enable_service mysql
+enable_service n-api
+enable_service n-api-meta
+enable_service n-cond
+enable_service n-cpu
+enable_service n-novnc
+enable_service n-sch
+enable_service neutron-segments
+enable_service neutron-trunk
+enable_service openstack-cli-server
+enable_service ovn-controller
+enable_service ovn-northd
+enable_service ovs-vswitchd
+enable_service ovsdb-server
+enable_service placement-api
+disable_service q-agt
+disable_service q-dhcp
+enable_service q-dns
+disable_service q-l3
+disable_service q-meta
+disable_service q-metering
+enable_service q-ovn-agent
+disable_service q-ovn-metadata-agent
+enable_service q-port-forwarding
+enable_service q-qos
+enable_service q-svc
+enable_service rabbit
+disable_service s-account
+disable_service s-container
+disable_service s-object
+disable_service s-proxy
+enable_service tempest
+enable_service tls-proxy
+ADMIN_PASSWORD="secretadmin"
+BUILD_TIMEOUT="784"
+CIRROS_VERSION="0.6.3"
+DATABASE_PASSWORD="secretdatabase"
+DEBUG_LIBVIRT_COREDUMPS="True"
+DEFAULT_IMAGE_FILE_NAME="cirros-0.6.3-x86_64-uec.tar.gz"
+DEFAULT_IMAGE_NAME="cirros-0.6.3-x86_64-uec"
+ENABLE_CHASSIS_AS_GW="True"
+ENABLE_SYSCTL_MEM_TUNING="True"
+ENABLE_SYSCTL_NET_TUNING="True"
+ENABLE_TLS="True"
+ENABLE_ZSWAP="True"
+ERROR_ON_CLONE="True"
+FIXED_RANGE="10.1.0.0/20"
+FLOATING_RANGE="172.24.5.0/24"
+FORCE_CONFIG_DRIVE="False"
+HOST_IP="10.209.0.252"
+IMAGE_URLS="http://download.cirros-cloud.net/0.6.2/cirros-0.6.2-x86_64-disk.img, http://download.cirros-cloud.net/0.6.1/cirros-0.6.1-x86_64-disk.img"
+IPV4_ADDRS_SAFE_TO_USE="10.1.0.0/20"
+LIBVIRT_TYPE="qemu"
+LIVE_MIGRATION_AVAILABLE="True"
+LOGFILE="/opt/stack/logs/devstacklog.txt"
+LOG_COLOR="False"
+ML2_L3_PLUGIN="ovn-router,trunk"
+MYSQL_REDUCE_MEMORY="True"
+NETWORK_GATEWAY="10.1.0.1"
+NEUTRON_DEPLOY_MOD_WSGI="True"
+NOVA_ALLOW_MOVE_TO_SAME_HOST="False"
+NOVA_LIBVIRT_TB_CACHE_SIZE="128"
+NOVA_VNC_ENABLED="True"
+OVN_AGENT_EXTENSIONS="metadata"
+OVN_BRANCH="main"
+OVN_BUILD_FROM_SOURCE="True"
+OVN_DBS_LOG_LEVEL="dbg"
+OVN_IGMP_SNOOPING_ENABLE="True"
+OVN_L3_CREATE_PUBLIC_NETWORK="True"
+OVS_BRANCH="main"
+PHYSICAL_NETWORK="public"
+PUBLIC_BRIDGE_MTU="1430"
+PUBLIC_NETWORK_GATEWAY="172.24.5.1"
+Q_AGENT="ovn"
+Q_ML2_PLUGIN_MECHANISM_DRIVERS="ovn,logger"
+Q_ML2_TENANT_NETWORK_TYPE="geneve"
+Q_USE_PROVIDERNET_FOR_PUBLIC="True"
+RABBIT_PASSWORD="secretrabbit"
+SERVICE_HOST="10.209.0.252"
+SERVICE_PASSWORD="secretservice"
+SWIFT_HASH="1234123412341234"
+SWIFT_REPLICAS="1"
+SWIFT_START_ALL_SERVICES="False"
+USE_BLOCK_MIGRATION_FOR_LIVE_MIGRATION="True"
+VERBOSE="True"
+VERBOSE_NO_TIMESTAMP="True"
+LIBS_FROM_GIT=novnc,cinder,devstack,glance,keystone,neutron,neutron-tempest-plugin,nova,os-test-images,placement,requirements,swift,tempest
+enable_plugin neutron https://opendev.org/openstack/neutron
+enable_plugin neutron-tempest-plugin https://opendev.org/openstack/neutron-tempest-plugin
+
+[[post-config|$NEUTRON_CONF]]
+[DEFAULT]
+global_physnet_mtu = 1430
+[[post-config|/$NEUTRON_CORE_PLUGIN_CONF]]
+[ovn]
+enable_distributed_floating_ip = True
+[[test-config|$TEMPEST_CONFIG]]
+[compute]
+min_compute_nodes = 2
+
+[neutron_plugin_options]
+is_igmp_snooping_enabled = True
+
+[scenario]
+dhcp_client = dhcpcd
+
+[service-clients]
+http_timeout = 90
