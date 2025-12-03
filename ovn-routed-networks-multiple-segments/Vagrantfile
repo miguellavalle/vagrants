@@ -6,6 +6,7 @@ IPS = {central:      '192.168.50.10',
        worker2_seg2: '172.24.6.101',
        worker3:      '192.168.50.102',
        worker3_seg2: '172.24.6.102',
+       iprouter:     '192.168.50.20',
       }
 
 
@@ -89,6 +90,24 @@ Vagrant.configure(2) do |config|
             shell.path = 'worker.sh'
             shell.env = IPS
             shell.args = ['segment-2']
+        end
+    end
+
+    # router between segment-1 and segment-2
+    config.vm.define 'iprouter' do |iprouter|
+        iprouter.vm.network 'private_network', ip: IPS[:iprouter]
+        iprouter.vm.network 'private_network', type: "dhcp", auto_config: false
+        iprouter.vm.network 'private_network', type: "dhcp", auto_config: false
+        iprouter.vm.hostname = 'iprouter'
+        iprouter.vm.provider 'libvirt' do |lb|
+            lb.nested = true
+            lb.memory = 2048
+            lb.cpus = 4
+            lb.suspend_mode = 'managedsave'
+        end
+        iprouter.vm.provision :shell do |shell|
+            shell.privileged = false
+            shell.path = 'iprouter.sh'
         end
     end
 
