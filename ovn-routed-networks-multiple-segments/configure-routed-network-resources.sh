@@ -17,16 +17,16 @@ openstack network delete private
 openstack security group list -c ID -f value  | xargs openstack security group delete
 
 # Add new vlan mappings
-iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-1:100:102,segment-2-1:200:202
+iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-net-1:100:102,segment-1-net-2:200:202
 sudo systemctl restart devstack@neutron-api.service
 sleep 10
 
 # Based on: https://docs.openstack.org/neutron/pike/admin/config-routed-networks.html
-openstack network create --share --provider-physical-network segment-1-1 --provider-network-type vlan --provider-segment 100 public
-openstack network segment set --name segment-1-1 $(openstack network segment list --network public -c ID -f value)
-openstack network segment create --physical-network segment-2-1 --network-type vlan --segment 200 --network public segment-2-1
-openstack subnet create --network public --network-segment segment-1-1 --ip-version 4 --subnet-range 172.24.4.0/24 --allocation-pool start=172.24.4.100,end=172.24.4.200 public-segment-1-1-v4
-openstack subnet create --network public --network-segment segment-2-1 --ip-version 4 --subnet-range 172.24.6.0/24 --allocation-pool start=172.24.6.100,end=172.24.6.200 public-segment-2-1-v4
+openstack network create --share --provider-physical-network segment-1-net-1 --provider-network-type vlan --provider-segment 100 public
+openstack network segment set --name segment-1-net-1 $(openstack network segment list --network public -c ID -f value)
+openstack network segment create --physical-network segment-1-net-2 --network-type vlan --segment 200 --network public segment-1-net-2
+openstack subnet create --network public --network-segment segment-1-net-1 --ip-version 4 --subnet-range 172.24.4.0/24 --allocation-pool start=172.24.4.100,end=172.24.4.200 public-segment-1-net-1-v4
+openstack subnet create --network public --network-segment segment-1-net-2 --ip-version 4 --subnet-range 172.24.6.0/24 --allocation-pool start=172.24.6.100,end=172.24.6.200 public-segment-1-net-2-v4
 
 # Create security group that accepts ICMP and TCP
 sg_id=$(openstack security group create -c id -f value sg-for-multisegment)
