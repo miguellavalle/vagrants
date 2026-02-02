@@ -1,11 +1,11 @@
 IPS = {central:        '192.168.50.10',
-       central_seg1_1: '172.24.4.10',
+       central_net_1:  '172.24.4.10',
        worker1:        '192.168.50.100',
-       worker1_seg1_1: '172.24.4.100',
+       worker1_net_1:  '172.24.4.100',
        worker2:        '192.168.50.101',
-       worker2_seg2_1: '172.24.6.101',
+       worker2_net_2:  '172.24.6.101',
        worker3:        '192.168.50.102',
-       worker3_seg2_1: '172.24.6.102',
+       worker3_net_2:  '172.24.6.102',
        iprouter:       '192.168.50.20',
       }
 
@@ -17,13 +17,13 @@ Vagrant.configure(2) do |config|
     config.vm.box = "bento/ubuntu-24.04"
     config.vm.synced_folder './', '/vagrant', type: 'rsync'
 
-    # central as controller node (northd/southd) and as compute connected to segment-1-1
+    # central as controller node (northd/southd) and as compute connected to segment-1-net-1
     config.vm.define 'central' do |central|
         central.vm.network 'private_network', ip: IPS[:central]
         central.vm.network 'private_network',
-            ip: IPS[:central_seg1_1],
-            libvirt__network_name: "segment-1-1-net",
-            libvirt__iface_name: "central-s1-1"
+            ip: IPS[:central_net_1],
+            libvirt__network_name: "segments-net-1",
+            libvirt__iface_name: "central-net-1"
         central.vm.hostname = 'central'
         central.vm.provider 'libvirt' do |lb|
             lb.nested = true
@@ -35,17 +35,17 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'central.sh'
             shell.env = IPS
-            shell.args = ['segment-1-1']
+            shell.args = ['segment-1-net-1']
         end
     end
 
-    # openstack compute connected to segment-1-1
+    # openstack compute connected to segment-1-net-1
     config.vm.define 'worker1' do |worker1|
         worker1.vm.network 'private_network', ip: IPS[:worker1]
         worker1.vm.network 'private_network',
-            ip: IPS[:worker1_seg1_1],
-            libvirt__network_name: "segment-1-1-net",
-            libvirt__iface_name: "worker1-s1-1"
+            ip: IPS[:worker1_net_1],
+            libvirt__network_name: "segments-net-1",
+            libvirt__iface_name: "worker1-net-1"
         worker1.vm.hostname = 'worker1'
         worker1.vm.provider 'libvirt' do |lb|
             lb.nested = true
@@ -57,17 +57,17 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-1']
+            shell.args = ['segment-1-net-1']
         end
     end
 
-    # openstack compute connected to segment-2-1
+    # openstack compute connected to segment-1-net-2
     config.vm.define 'worker2' do |worker2|
         worker2.vm.network 'private_network', ip: IPS[:worker2]
         worker2.vm.network 'private_network',
-            ip: IPS[:worker2_seg2_1],
-            libvirt__network_name: "segment-2-1-net",
-            libvirt__iface_name: "worker2-s2-1"
+            ip: IPS[:worker2_net_2],
+            libvirt__network_name: "segments-net-2",
+            libvirt__iface_name: "worker2-net-2"
         worker2.vm.hostname = 'worker2'
         worker2.vm.provider 'libvirt' do |lb|
             lb.nested = true
@@ -79,17 +79,17 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-2-1']
+            shell.args = ['segment-1-net-2']
         end
     end
 
-    # openstack compute connected to segment-2-1
+    # openstack compute connected to segment-1-net-2
     config.vm.define 'worker3' do |worker3|
         worker3.vm.network 'private_network', ip: IPS[:worker3]
         worker3.vm.network 'private_network',
-            ip: IPS[:worker3_seg2_1],
-            libvirt__network_name: "segment-2-1-net",
-            libvirt__iface_name: "worker3-s2-1"
+            ip: IPS[:worker3_net_2],
+            libvirt__network_name: "segments-net-2",
+            libvirt__iface_name: "worker3-net-2"
         worker3.vm.hostname = 'worker3'
         worker3.vm.provider 'libvirt' do |lb|
             lb.nested = true
@@ -101,23 +101,23 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-2-1']
+            shell.args = ['segment-1-net-2']
         end
     end
 
-    # router between segment-1-1 and segment-2-1
+    # router between segment-1-net-1 and segment-1-net-2
     config.vm.define 'iprouter' do |iprouter|
         iprouter.vm.network 'private_network', ip: IPS[:iprouter]
         iprouter.vm.network 'private_network',
             type: "dhcp",
             auto_config: false,
-            libvirt__network_name: "segment-1-1-net",
-            libvirt__iface_name: "iprouter-s1-1"
+            libvirt__network_name: "segments-net-1",
+            libvirt__iface_name: "iprouter-net-1"
         iprouter.vm.network 'private_network',
             type: "dhcp",
             auto_config: false,
-            libvirt__network_name: "segment-2-1-net",
-            libvirt__iface_name: "iprouter-s2-1"
+            libvirt__network_name: "segments-net-2",
+            libvirt__iface_name: "iprouter-net-2"
         iprouter.vm.hostname = 'iprouter'
         iprouter.vm.provider 'libvirt' do |lb|
             lb.nested = true
