@@ -2,7 +2,8 @@
 set -x
 
 hostname=$(hostname)
-segment=$1
+segment_1=$1
+bridge_1=$2
 
 DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy 
 DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy 
@@ -29,5 +30,5 @@ mkdir -p /opt/stack/data/CA
 rsync -avz rsync://${central}/key/ca-bundle.pem /opt/stack/data
 rsync -avz rsync://${central}/CA_data /opt/stack/data/CA
 ./stack.sh
-sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment}:br-ex"
+sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment_1}:${bridge_1}"
 sudo ovs-vsctl add-port br-ex eth2

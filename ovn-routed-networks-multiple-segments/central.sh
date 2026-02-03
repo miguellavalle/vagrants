@@ -2,7 +2,8 @@
 set -x
 
 hostname=$(hostname)
-segment=$1
+segment_1=$1
+bridge_1=$2
 
 DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy 
 DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy 
@@ -29,5 +30,5 @@ git clone https://github.com/openstack/tempest /opt/stack/tempest
 sudo cp /vagrant/rsyncd.conf /etc/.
 sudo systemctl start rsync
 sudo systemctl enable rsync
-sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment}:br-ex"
+sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment_1}:${bridge_1}"
 sudo ovs-vsctl add-port br-ex eth2

@@ -17,7 +17,7 @@ openstack network delete private
 openstack security group list -c ID -f value  | xargs openstack security group delete
 
 # Add new vlan mappings
-iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-net-1:100:102,segment-1-net-2:200:202
+iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-net-1:4000:4094,segment-1-net-2:4000:4094
 sudo systemctl restart devstack@neutron-api.service
 sleep 10
 
