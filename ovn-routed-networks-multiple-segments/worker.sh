@@ -3,7 +3,7 @@ set -x
 
 hostname=$(hostname)
 segment_1=$1
-bridge_1=$2
+vlan_id_1=$2
 
 DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy 
 DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy 
@@ -30,5 +30,15 @@ mkdir -p /opt/stack/data/CA
 rsync -avz rsync://${central}/key/ca-bundle.pem /opt/stack/data
 rsync -avz rsync://${central}/CA_data /opt/stack/data/CA
 ./stack.sh
-sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment_1}:${bridge_1}"
+sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment_1}:br-ex-${vlan_id_1}"
+
+# Set up segment bridges and patch ports
+sudo ovs-vsctl add-br br-ex-${vlan_id_1}
+sudo ovs-vsctl \
+	-- add-port br-ex patch-ex-${vlan_id_1} \
+	-- set interface patch-ex-${vlan_id_1} type=patch options:peer=patch-${vlan_id_1}-ex \
+	-- add-port br-ex-${vlan_id_1} patch-${vlan_id_1}-ex \
+	-- set interface patch-${vlan_id_1}-ex type=patch options:peer=patch-ex-${vlan_id_1}
+sudo ovs-vsctl set Port patch-ex-${vlan_id_1} vlan_mode=access tag=${vlan_id_1}
 sudo ovs-vsctl add-port br-ex eth2
+sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=100,200

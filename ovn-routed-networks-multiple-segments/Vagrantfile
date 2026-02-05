@@ -35,7 +35,7 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'central.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-1', 'br-ex-100']
+            shell.args = ['segment-1-net-1', '100']
         end
     end
 
@@ -57,7 +57,7 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-1', 'br-ex-100']
+            shell.args = ['segment-1-net-1', '100']
         end
     end
 
@@ -79,7 +79,7 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-2', 'br-ex-200']
+            shell.args = ['segment-1-net-2', '200']
         end
     end
 
@@ -101,7 +101,7 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-2', 'br-ex-200']
+            shell.args = ['segment-1-net-2', '200']
         end
     end
 
