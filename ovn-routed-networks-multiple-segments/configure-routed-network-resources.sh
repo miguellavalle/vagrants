@@ -5,22 +5,6 @@ set -x
 # Discover all the hosts in the system
 nova-manage cell_v2 discover_hosts
 
-# Delete created by devstack flat public network
-openstack router unset --external-gateway router1
-openstack router show router1 -c interfaces_info -f yaml | grep port_id | awk {'print $2'} | xargs -I% openstack router remove port router1 %
-openstack router delete router1
-openstack network delete public
-
-# Delete unused networks and security groups
-openstack network delete shared
-openstack network delete private
-openstack security group list -c ID -f value  | xargs openstack security group delete
-
-# Add new vlan mappings
-iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-net-1:4000:4094,segment-1-net-2:4000:4094
-sudo systemctl restart devstack@neutron-api.service
-sleep 10
-
 # Based on: https://docs.openstack.org/neutron/pike/admin/config-routed-networks.html
 openstack network create --share --provider-physical-network segment-1-net-1 --provider-network-type vlan --provider-segment 100 public
 openstack network segment set --name segment-1-net-1 $(openstack network segment list --network public -c ID -f value)
