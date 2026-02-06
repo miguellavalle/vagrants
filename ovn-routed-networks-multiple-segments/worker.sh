@@ -5,8 +5,8 @@ hostname=$(hostname)
 segment_1=$1
 vlan_id_1=$2
 
-DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy 
-DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy 
+DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy
+DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy
 
 git clone https://github.com/openstack/devstack.git ~/devstack
 cp /vagrant/local.conf.worker /home/vagrant/devstack/local.conf
@@ -42,3 +42,6 @@ sudo ovs-vsctl \
 sudo ovs-vsctl set Port patch-ex-${vlan_id_1} vlan_mode=access tag=${vlan_id_1}
 sudo ovs-vsctl add-port br-ex eth2
 sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=100,200
+
+cp /vagrant/.vimrc ~/.
+cp /vagrant/.editorconfig /opt/stack/neutron/.
