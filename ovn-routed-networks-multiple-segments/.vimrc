@@ -8,20 +8,20 @@ filetype plugin indent on
 set number
 
 " Set tab character width to 4 spaces (Python standard)
-set tabstop=4
+" set tabstop=4
 
 " Set number of spaces to use for each step of (auto)indent
-set shiftwidth=4
+" set shiftwidth=4
 
 " Use spaces instead of tabs for indentation
-set expandtab
-"
+" set expandtab
+
 " Enable intelligent indentation (works with Python syntax)
-set autoindent
-set smartindent
+" set autoindent
+" set smartindent
 
 " Make backspace behave more like a normal editor
-set backspace=indent,eol,start
+" set backspace=indent,eol,start
 
 " Allow saving changes even when other buffers are open
 set hidden

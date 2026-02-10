@@ -64,3 +64,4 @@ sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=100,200
 
 cp /vagrant/.vimrc ~/.
 cp /vagrant/.editorconfig /opt/stack/neutron/.
+curl -LsSf https://astral.sh/ruff/install.sh | sh
