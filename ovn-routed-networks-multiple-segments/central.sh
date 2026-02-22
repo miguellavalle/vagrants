@@ -62,6 +62,11 @@ sudo ovs-vsctl set Port patch-ex-${vlan_id_1} vlan_mode=access tag=${vlan_id_1}
 sudo ovs-vsctl add-port br-ex eth2
 sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=100,200
 
-cp /vagrant/.vimrc ~/.
-cp /vagrant/.editorconfig /opt/stack/neutron/.
+# Set up develpment tools
 curl -LsSf https://astral.sh/ruff/install.sh | sh
+wget https://github.com/neovim/neovim/releases/download/v0.11.6/nvim-linux-x86_64.tar.gz
+tar xzvf nvim-linux-x86_64.tar.gz
+cp /vagrant/.editorconfig /opt/stack/neutron/.
+mkdir -p ~/.config/nvim
+cp /vagrant/init.lua ~/.config/nvim/.
+sudo apt install ripgrep -y
