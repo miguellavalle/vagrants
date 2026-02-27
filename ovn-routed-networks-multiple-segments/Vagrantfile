@@ -18,6 +18,7 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder './', '/vagrant', type: 'rsync'
 
     # central as controller node (northd/southd) and as compute connected to segment-1-net-1
+    # and segment-2-net-1
     config.vm.define 'central' do |central|
         central.vm.network 'private_network', ip: IPS[:central]
         central.vm.network 'private_network',
@@ -35,11 +36,11 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'central.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-1', '100']
+            shell.args = ['segment-1-net-1', '100', 'segment-2-net-1', '300']
         end
     end
 
-    # openstack compute connected to segment-1-net-1
+    # openstack compute connected to segment-1-net-1 and segment-2-net-1
     config.vm.define 'worker1' do |worker1|
         worker1.vm.network 'private_network', ip: IPS[:worker1]
         worker1.vm.network 'private_network',
@@ -57,11 +58,11 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-1', '100']
+            shell.args = ['segment-1-net-1', '100', 'segment-2-net-1', '300']
         end
     end
 
-    # openstack compute connected to segment-1-net-2
+    # openstack compute connected to segment-1-net-2 and segment-2-net-2
     config.vm.define 'worker2' do |worker2|
         worker2.vm.network 'private_network', ip: IPS[:worker2]
         worker2.vm.network 'private_network',
@@ -79,11 +80,11 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-2', '200']
+            shell.args = ['segment-1-net-2', '200', 'segment-2-net-2', '400']
         end
     end
 
-    # openstack compute connected to segment-1-net-2
+    # openstack compute connected to segment-1-net-2 and segment-2-net-2
     config.vm.define 'worker3' do |worker3|
         worker3.vm.network 'private_network', ip: IPS[:worker3]
         worker3.vm.network 'private_network',
@@ -101,11 +102,11 @@ Vagrant.configure(2) do |config|
             shell.privileged = false
             shell.path = 'worker.sh'
             shell.env = IPS
-            shell.args = ['segment-1-net-2', '200']
+            shell.args = ['segment-1-net-2', '200', 'segment-2-net-2', '400']
         end
     end
 
-    # router between segment-1-net-1 and segment-1-net-2
+    # router between segment-1-net-1, segment-2-net-1, segment-1-net-2 and segment-2-net-2
     config.vm.define 'iprouter' do |iprouter|
         iprouter.vm.network 'private_network', ip: IPS[:iprouter]
         iprouter.vm.network 'private_network',
