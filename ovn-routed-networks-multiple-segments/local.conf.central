@@ -46,7 +46,7 @@ disable_service s-account
 disable_service s-container
 disable_service s-object
 disable_service s-proxy
-enable_service tempest
+#enable_service tempest
 enable_service tls-proxy
 ADMIN_PASSWORD="secretadmin"
 BUILD_TIMEOUT="784"
@@ -103,7 +103,7 @@ VERBOSE="True"
 VERBOSE_NO_TIMESTAMP="True"
 LIBS_FROM_GIT=novnc,cinder,devstack,glance,keystone,neutron,neutron-tempest-plugin,nova,os-test-images,placement,requirements,swift,tempest
 enable_plugin neutron https://opendev.org/openstack/neutron
-enable_plugin neutron-tempest-plugin https://opendev.org/openstack/neutron-tempest-plugin
+#enable_plugin neutron-tempest-plugin https://opendev.org/openstack/neutron-tempest-plugin
 
 [[post-config|$NEUTRON_CONF]]
 [DEFAULT]
