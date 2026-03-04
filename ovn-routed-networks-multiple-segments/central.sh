@@ -75,8 +75,10 @@ sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=${vlan_id_1},${vlan_id_2}
 
 # Set up develpment tools
 curl -LsSf https://astral.sh/ruff/install.sh | sh
-wget https://github.com/neovim/neovim/releases/download/v0.11.6/nvim-linux-x86_64.tar.gz
-tar xzvf nvim-linux-x86_64.tar.gz
+cd ~
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+tar xzf nvim-linux-x86_64.tar.gz
+echo 'alias nvim="~/nvim-linux-x86_64/bin/nvim"' >> ~/.bashrc
 cp /vagrant/.editorconfig /opt/stack/neutron/.
 mkdir -p ~/.config/nvim
 cp /vagrant/init.lua ~/.config/nvim/.
