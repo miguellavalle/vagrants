@@ -19,6 +19,7 @@ openstack subnet create --network public --network-segment segment-1-net-2 --ip-
 openstack subnet create --network public --network-segment segment-2-net-2 --ip-version 4 --subnet-range 172.24.12.0/24 --allocation-pool start=172.24.12.100,end=172.24.12.200 public-segment-2-net-2-v4
 
 # Create security group that accepts ICMP and TCP
+sg_id=$(openstack security group create -c id -f value sg-for-multisegment)
 openstack security group rule create --protocol icmp sg-for-multisegment
 openstack security group rule create --protocol tcp sg-for-multisegment
 
