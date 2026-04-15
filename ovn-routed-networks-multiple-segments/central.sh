@@ -2,9 +2,9 @@
 set -x
 
 hostname=$(hostname)
-segment_1=$1
+physnet_1=$1
 vlan_id_1=$2
-segment_2=$3
+physnet_2=$3
 vlan_id_2=$4
 
 DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy
@@ -32,7 +32,7 @@ git clone https://github.com/openstack/tempest /opt/stack/tempest
 sudo cp /vagrant/rsyncd.conf /etc/.
 sudo systemctl start rsync
 sudo systemctl enable rsync
-sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${segment_1}:br-ex-${vlan_id_1},${segment_2}:br-ex-${vlan_id_2}"
+sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${physnet_1}:br-ex-${vlan_id_1},${physnet_2}:br-ex-${vlan_id_2}"
 
 # Delete created by devstack flat public network
 set +x
@@ -52,23 +52,6 @@ openstack security group list -c ID -f value  | xargs openstack security group d
 iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-net-1:4000:4094,segment-1-net-2:4000:4094,segment-2-net-1:4000:4094,segment-2-net-2:4000:4094
 sudo systemctl restart devstack@neutron-api.service
 sleep 10
-
-# Set up segment bridges and patch ports
-sudo ovs-vsctl add-br br-ex-${vlan_id_1}
-sudo ovs-vsctl \
-	-- add-port br-ex patch-ex-${vlan_id_1} \
-	-- set interface patch-ex-${vlan_id_1} type=patch options:peer=patch-${vlan_id_1}-ex \
-	-- add-port br-ex-${vlan_id_1} patch-${vlan_id_1}-ex \
-	-- set interface patch-${vlan_id_1}-ex type=patch options:peer=patch-ex-${vlan_id_1}
-sudo ovs-vsctl set Port patch-ex-${vlan_id_1} vlan_mode=access tag=${vlan_id_1}
-
-sudo ovs-vsctl add-br br-ex-${vlan_id_2}
-sudo ovs-vsctl \
-	-- add-port br-ex patch-ex-${vlan_id_2} \
-	-- set interface patch-ex-${vlan_id_2} type=patch options:peer=patch-${vlan_id_2}-ex \
-	-- add-port br-ex-${vlan_id_2} patch-${vlan_id_2}-ex \
-	-- set interface patch-${vlan_id_2}-ex type=patch options:peer=patch-ex-${vlan_id_2}
-sudo ovs-vsctl set Port patch-ex-${vlan_id_2} vlan_mode=access tag=${vlan_id_2}
 
 sudo ovs-vsctl add-port br-ex eth2
 sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=${vlan_id_1},${vlan_id_2}
