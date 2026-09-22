@@ -7,8 +7,11 @@ vlan_id_1=$2
 physnet_2=$3
 vlan_id_2=$4
 
-DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy
-DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy
+sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get update -qqy
+
+sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get upgrade -qqy \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold"
 
 git clone https://github.com/openstack/devstack.git ~/devstack
 cp /vagrant/local.conf.central /home/vagrant/devstack/local.conf
@@ -49,9 +52,22 @@ openstack network delete private
 openstack security group list -c ID -f value  | xargs openstack security group delete
 
 # Add new vlan mappings
-iniset /etc/neutron/plugins/ml2/ml2_conf.ini  ml2_type_vlan network_vlan_ranges segment-1-net-1:4000:4094,segment-1-net-2:4000:4094,segment-2-net-1:4000:4094,segment-2-net-2:4000:4094
+iniset /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vlan network_vlan_ranges segment-1-net-1:4000:4094,segment-1-net-2:4000:4094,segment-2-net-1:4000:4094,segment-2-net-2:4000:4094
+iniset /etc/neutron/plugins/ml2/ml2_conf.ini ovn logical_switch_per_vlan_segment True
+iniset /etc/neutron/plugins/ml2/ovn_agent.ini agent extensions metadata,segment_bridge
 sudo systemctl restart devstack@neutron-api.service
 sleep 10
+sudo systemctl restart devstack@q-ovn-agent.service
+sleep 10
+
+# Required to enable VM live migrations
+sudo tee -a /etc/ssh/ssh_config > /dev/null << 'EOF'
+
+Host worker* central
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+    LogLevel QUIET
+EOF
 
 sudo ovs-vsctl add-port br-ex eth2
 sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=${vlan_id_1},${vlan_id_2}

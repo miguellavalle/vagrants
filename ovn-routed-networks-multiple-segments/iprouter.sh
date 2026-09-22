@@ -3,8 +3,11 @@ set -x
 
 hostname=$(hostname)
 
-DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy 
-DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy 
+sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get update -qqy
+
+sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get upgrade -qqy \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold"
 
 sudo modprobe 8021q
 
