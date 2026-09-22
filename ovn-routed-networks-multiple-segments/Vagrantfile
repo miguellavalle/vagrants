@@ -13,6 +13,8 @@ IPS = {central:        '192.168.50.10',
 Vagrant.configure(2) do |config|
 
     config.ssh.forward_agent = true
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_guest = true
     config.vm.hostname = "ovnhost"
     config.vm.box = "bento/ubuntu-24.04"
     config.vm.synced_folder './', '/vagrant', type: 'rsync'

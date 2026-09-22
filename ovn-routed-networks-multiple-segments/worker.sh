@@ -7,8 +7,11 @@ vlan_id_1=$2
 physnet_2=$3
 vlan_id_2=$4
 
-DEBIAN_FRONTEND=noninteractive sudo apt-get update -qqy
-DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -qqy
+sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get update -qqy
+
+sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get upgrade -qqy \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold"
 
 git clone https://github.com/openstack/devstack.git ~/devstack
 cp /vagrant/local.conf.worker /home/vagrant/devstack/local.conf
@@ -33,6 +36,21 @@ rsync -avz rsync://${central}/key/ca-bundle.pem /opt/stack/data
 rsync -avz rsync://${central}/CA_data /opt/stack/data/CA
 ./stack.sh
 sudo ovs-vsctl set open . external-ids:ovn-bridge-mappings="${physnet_1}:br-ex-${vlan_id_1},${physnet_2}:br-ex-${vlan_id_2}"
+
+set +x
+source ~/devstack/openrc admin admin
+iniset /etc/neutron/plugins/ml2/ovn_agent.ini agent extensions metadata,segment_bridge
+sudo systemctl restart devstack@q-ovn-agent.service
+sleep 10
+
+# Required to enable VM live migrations
+sudo tee -a /etc/ssh/ssh_config > /dev/null << 'EOF'
+
+Host worker* central
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+    LogLevel QUIET
+EOF
 
 sudo ovs-vsctl add-port br-ex eth2
 sudo ovs-vsctl set Port eth2 vlan_mode=trunk trunks=${vlan_id_1},${vlan_id_2}
